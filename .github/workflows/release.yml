@@ -5,17 +5,38 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
-  build:
+  release:
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Build for macOS 11
+      - name: Show Files
+        run: |
+          pwd
+          ls -la
+          find . -name "*.xcodeproj"
+
+      - name: Build
         run: |
           xcodebuild \
+            -project MacAndCheese.xcodeproj \
             -scheme MacAndCheese \
             -configuration Release \
-            MACOSX_DEPLOYMENT_TARGET=11.0 \
-            build
+            MACOSX_DEPLOYMENT_TARGET=11.0
+
+      - name: Package
+        run: |
+          mkdir upload
+          echo "Mac and Cheese Build" > upload/README.txt
+          zip -r MacAndCheese.zip upload
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: MacAndCheese.zip
