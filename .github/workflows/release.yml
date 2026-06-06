@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build for macOS 11
+        run: |
+          xcodebuild \
+            -scheme MacAndCheese \
+            -configuration Release \
+            MACOSX_DEPLOYMENT_TARGET=11.0 \
+            build
